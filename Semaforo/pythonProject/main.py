@@ -18,6 +18,7 @@ ROJO = (255, 0, 0)
 ANCHO = 800
 ALTO = 300
 
+
 # Definir la clase Semáforo
 class Semafaro:
     def __init__(self, x, y):
@@ -35,6 +36,20 @@ class Semafaro:
             self.color_rojo = NEGRO
             self.estado = "VERDE"
         elif self.estado == "VERDE":
+            # Parpadeo antes de cambiar a amarillo
+            parpadeo_count = 0
+            while parpadeo_count < 5:
+                self.color_verde = NEGRO
+                self.color_amarillo = NEGRO
+                self.color_rojo = NEGRO
+                time.sleep(0.5)  # Tiempo de cada parpadeo
+                self.color_verde = VERDE
+                self.color_amarillo = NEGRO
+                self.color_rojo = NEGRO
+                time.sleep(0.5)  # Tiempo de cada parpadeo
+                parpadeo_count += 1
+
+            # Cambiar a amarillo después del parpadeo
             self.color_verde = NEGRO
             self.color_amarillo = AMARILLO
             self.estado = "AMARILLO"
@@ -43,11 +58,24 @@ class Semafaro:
             self.color_rojo = ROJO
             self.estado = "ROJO"
 
-    def dibujar(self, pantalla):
+    def dibujar_horizontal(self, pantalla):
         # Dibujar los círculos que representan los colores del semáforo
         pygame.draw.circle(pantalla, self.color_verde, (self.x, self.y - 10), 5)
         pygame.draw.circle(pantalla, self.color_amarillo, (self.x, self.y), 5)
         pygame.draw.circle(pantalla, self.color_rojo, (self.x, self.y + 10), 5)
+
+    def dibujar_vertical(self, pantalla):
+        # Dibujar los círculos que representan los colores del semáforo
+        pygame.draw.circle(pantalla, self.color_verde, (self.x - 10, self.y), 5)
+        pygame.draw.circle(pantalla, self.color_amarillo, (self.x, self.y), 5)
+        pygame.draw.circle(pantalla, self.color_rojo, (self.x + 10, self.y), 5)
+
+    def dibujar_vertical_inferior(self, pantalla):
+        # Dibujar los círculos que representan los colores del semáforo
+        pygame.draw.circle(pantalla, self.color_verde, (self.x + 10, self.y), 5)
+        pygame.draw.circle(pantalla, self.color_amarillo, (self.x, self.y), 5)
+        pygame.draw.circle(pantalla, self.color_rojo, (self.x - 10, self.y), 5)
+
 
 # Función para cambiar el estado de los semáforos horizontales
 def cambiar_semaforo_horizontal(semH):
@@ -59,7 +87,8 @@ def cambiar_semaforo_horizontal(semH):
         semH.cambiar_color()
         time.sleep(1)
         semH.cambiar_color()
-        time.sleep(10)
+        time.sleep(16)
+
 
 # Función para cambiar el estado de los semáforos verticales
 def cambiar_semaforo_vertical(semV):
@@ -67,19 +96,20 @@ def cambiar_semaforo_vertical(semV):
         # Cambiar el color del semáforo vertical
         semV.cambiar_color()
         # Esperar 9 segundos en verde, 1 segundo en amarillo, 12 segundos en rojo
-        time.sleep(9)
+        time.sleep(10)
         semV.cambiar_color()
         time.sleep(1)
         semV.cambiar_color()
-        time.sleep(12)
+        time.sleep(17)
+
 
 # Crear semáforos
 semaforo_1 = Semafaro(229, 185)
 semaforo_2 = Semafaro(457, 185)
 semaforo_3 = Semafaro(686, 185)
-semaforo_4 = Semafaro(120, 210)
-semaforo_5 = Semafaro(450, 90)
-semaforo_6 = Semafaro(580, 210)
+semaforo_4 = Semafaro(130, 205)
+semaforo_5 = Semafaro(440, 95)
+semaforo_6 = Semafaro(586, 205)
 
 # Iniciar los threads para cada semáforo
 thread_semH1 = threading.Thread(target=cambiar_semaforo_horizontal, args=(semaforo_1,))
@@ -95,7 +125,7 @@ time.sleep(1)
 thread_semH2.start()
 time.sleep(1)
 thread_semH3.start()
-time.sleep(10)
+time.sleep(15)
 thread_semV4.start()
 time.sleep(1)
 thread_semV5.start()
@@ -106,10 +136,12 @@ thread_semV6.start()
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Simulador de Semaforos")
 
+
 # Función para salir del programa
 def salir():
     pygame.quit()
     sys.exit()
+
 
 # Crear botón de salir
 boton_salir = pygame.Rect(700, 10, 80, 30)
@@ -197,12 +229,12 @@ while not terminado:
     pygame.draw.line(pantalla, AMARILLO, (6 * ANCHO // 7, 2 * ALTO // 3), (ANCHO, 2 * ALTO // 3), 5)
 
     # Dibujar semáforos
-    semaforo_1.dibujar(pantalla)
-    semaforo_2.dibujar(pantalla)
-    semaforo_3.dibujar(pantalla)
-    semaforo_4.dibujar(pantalla)
-    semaforo_5.dibujar(pantalla)
-    semaforo_6.dibujar(pantalla)
+    semaforo_1.dibujar_horizontal(pantalla)
+    semaforo_2.dibujar_horizontal(pantalla)
+    semaforo_3.dibujar_horizontal(pantalla)
+    semaforo_4.dibujar_vertical_inferior(pantalla)
+    semaforo_5.dibujar_vertical(pantalla)
+    semaforo_6.dibujar_vertical_inferior(pantalla)
 
     # Dibujar botón de salir
     pygame.draw.rect(pantalla, (255, 0, 0), boton_salir)
